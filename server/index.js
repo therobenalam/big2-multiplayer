@@ -34,7 +34,7 @@ const io = new Server(server, {
 
 const mgr = createGameRoomManager(io);
 
-eo.on('connection', (socket) => {
+io.on('connection', (socket) => {
   socket.on('join', ({ name }) => {
     try {
       mgr.enqueuePlayer(socket, name?.toString().trim() || 'Player');
