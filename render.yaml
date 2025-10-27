@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: big2
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    autoDeployTrigger: commit
+    healthCheckPath: /healthz

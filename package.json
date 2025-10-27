@@ -1,0 +1,17 @@
+{
+  "name": "big2-multiplayer",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "postinstall": "echo postinstall",
+  "build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install && npm --prefix server run build",
+    "start": "npm --prefix server start",
+    "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "test": "node server/test.js || true"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}

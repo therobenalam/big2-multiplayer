@@ -1,0 +1,103 @@
+/* Modern table look and card styles */
+:root{
+  --bg: #0b1220;
+  --panel: #101826;
+  --panel-border: #1d2a40;
+  --text: #e6ebf5;
+  --muted: #9fb0d0;
+  --accent: #3b82f6;
+  --success: #10b981;
+  --danger: #ef4444;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: radial-gradient(1200px 700px at 50% 30%, #11301f 0%, #0f261a 40%, #0b1220 100%);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,h2,h3 { margin: 8px 0; }
+
+a { color: var(--accent); }
+
+.panel {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text);
+  font-size: 12px;
+}
+
+.table-area {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  text-align: center;
+}
+
+.cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.card-img {
+  width: 72px;
+  height: 104px;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+  background: #fff;
+  object-fit: cover;
+}
+
+.card-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  position: relative;
+  cursor: pointer;
+}
+
+.card-btn .ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  transition: all 120ms ease;
+}
+
+.card-btn:hover .ring { border-color: rgba(255,255,255,0.2); }
+.card-btn.selected .ring { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
+.card-btn.selected img { transform: translateY(-8px); }
+
+.controls button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  cursor: pointer;
+}
+.controls button[disabled] { opacity: 0.5; cursor: not-allowed; }
+.controls .primary { background: var(--accent); border-color: #1d4ed8; color: #fff; }
+.controls .secondary { background: rgba(255,255,255,0.08); }
+
+.players li { list-style: none; margin: 4px 0; }
+.players li .you { color: var(--success); font-weight: 600; }
+.players li .passed { color: var(--muted); font-style: italic; }
+
+.message { color: var(--danger); min-height: 1.5em; }
