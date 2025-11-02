@@ -43,6 +43,30 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('reconnect', ({ name }) => {
+    try {
+      mgr.handleReconnect(socket, name?.toString().trim());
+    } catch (e) {
+      socket.emit('errorMessage', e?.message || 'Failed to reconnect');
+    }
+  });
+
+  socket.on('leaveWaitingRoom', () => {
+    try {
+      mgr.handleLeaveWaitingRoom(socket);
+    } catch (e) {
+      socket.emit('errorMessage', e?.message || 'Failed to leave');
+    }
+  });
+
+  socket.on('startGameWithBots', () => {
+    try {
+      mgr.startGameWithBots(socket);
+    } catch (e) {
+      socket.emit('errorMessage', e?.message || 'Failed to start game with bots');
+    }
+  });
+
   socket.on('play', (cardIds) => {
     try {
       mgr.handlePlay(socket, cardIds);
@@ -56,6 +80,22 @@ io.on('connection', (socket) => {
       mgr.handlePass(socket);
     } catch (e) {
       socket.emit('playRejected', { error: e?.message || 'Cannot pass' });
+    }
+  });
+
+  socket.on('chatMessage', (message) => {
+    try {
+      mgr.handleChatMessage(socket, message);
+    } catch (e) {
+      socket.emit('errorMessage', e?.message || 'Failed to send message');
+    }
+  });
+
+  socket.on('typing', (isTyping) => {
+    try {
+      mgr.handleTyping(socket, isTyping);
+    } catch (e) {
+      // Silently fail for typing indicators
     }
   });
 

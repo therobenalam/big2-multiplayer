@@ -162,3 +162,145 @@ export function canBeat(prev, next) {
 function isFive(c){ return c && ['straight','flush','fullhouse','fourkind','straightflush'].includes(c.type); }
 
 export function includes3D(cards){ return cards.some(c=>c.id==='3D'); }
+
+// ===== AI BOT LOGIC =====
+
+// AI plays a hand - returns array of card objects to play, or null to pass
+export function getAIPlay(hand, lastPlay, lastPlayType, allPlayerCounts) {
+  if (!hand || hand.length === 0) return null;
+
+  // If starting new trick (lastPlay is null/undefined OR lastPlayType is null/undefined), AI prefers 5-card combos, then pairs, then singles
+  if (!lastPlay || !lastPlayType) {
+    // Try to find best 5-card combo
+    const fiveCardCombo = findBestFiveCardCombo(hand);
+    if (fiveCardCombo && fiveCardCombo.length === 5) {
+      return fiveCardCombo;
+    }
+    
+    // Try to find lowest pair
+    const lowestPair = findLowestPair(hand);
+    if (lowestPair && lowestPair.length === 2) {
+      return lowestPair;
+    }
+    
+    // Play lowest single card
+    return [hand[0]];
+  }
+
+  // Try to beat the last play
+  const validPlays = findValidPlays(hand, lastPlayType);
+  if (validPlays.length === 0) return null; // Must pass
+
+  // Defensive strategy: if opponent has few cards, play high
+  const minOpponentCards = Math.min(...allPlayerCounts.filter((_, idx) => idx !== -1));
+
+  if (minOpponentCards <= 3) {
+    return validPlays[validPlays.length - 1]; // Play highest
+  } else if (minOpponentCards <= 5 && Math.random() < 0.5) {
+    return validPlays[Math.floor(validPlays.length / 2)]; // Play medium
+  } else {
+    return validPlays[0]; // Play lowest valid
+  }
+}
+
+function findValidPlays(hand, lastPlayType) {
+  const validPlays = [];
+  
+  if (lastPlayType.type === 'single') {
+    // Find all singles that beat the last play
+    for (const card of hand) {
+      const combo = classify([card]);
+      if (combo && canBeat(lastPlayType, combo)) {
+        validPlays.push([card]);
+      }
+    }
+  } else if (lastPlayType.type === 'pair') {
+    // Find all pairs that beat the last play
+    const pairs = findAllPairs(hand);
+    for (const pair of pairs) {
+      const combo = classify(pair);
+      if (combo && canBeat(lastPlayType, combo)) {
+        validPlays.push(pair);
+      }
+    }
+  } else if (lastPlayType.type === 'triple') {
+    // Find all triples that beat the last play
+    const triples = findAllTriples(hand);
+    for (const triple of triples) {
+      const combo = classify(triple);
+      if (combo && canBeat(lastPlayType, combo)) {
+        validPlays.push(triple);
+      }
+    }
+  } else if (lastPlayType.type === 'straight' || lastPlayType.type === 'flush' || 
+             lastPlayType.type === 'fullhouse' || lastPlayType.type === 'fourkind' || 
+             lastPlayType.type === 'straightflush') {
+    // Find all 5-card combos that beat the last play
+    const fiveCardCombos = findAllFiveCardCombos(hand);
+    for (const combo of fiveCardCombos) {
+      const classified = classify(combo);
+      if (classified && canBeat(lastPlayType, classified)) {
+        validPlays.push(combo);
+      }
+    }
+  }
+
+  return validPlays;
+}
+
+function findAllPairs(hand) {
+  const pairs = [];
+  for (let i = 0; i < hand.length - 1; i++) {
+    for (let j = i + 1; j < hand.length; j++) {
+      if (hand[i].r === hand[j].r) {
+        pairs.push([hand[i], hand[j]]);
+      }
+    }
+  }
+  return pairs;
+}
+
+function findAllTriples(hand) {
+  const triples = [];
+  for (let i = 0; i < hand.length - 2; i++) {
+    for (let j = i + 1; j < hand.length - 1; j++) {
+      for (let k = j + 1; k < hand.length; k++) {
+        if (hand[i].r === hand[j].r && hand[j].r === hand[k].r) {
+          triples.push([hand[i], hand[j], hand[k]]);
+        }
+      }
+    }
+  }
+  return triples;
+}
+
+function findAllFiveCardCombos(hand) {
+  const combos = [];
+  // This is a simplified version - checks all possible 5-card combinations
+  for (let i = 0; i < hand.length - 4; i++) {
+    for (let j = i + 1; j < hand.length - 3; j++) {
+      for (let k = j + 1; k < hand.length - 2; k++) {
+        for (let l = k + 1; l < hand.length - 1; l++) {
+          for (let m = l + 1; m < hand.length; m++) {
+            const fiveCards = [hand[i], hand[j], hand[k], hand[l], hand[m]];
+            const combo = classify(fiveCards);
+            if (combo && isFive(combo)) {
+              combos.push(fiveCards);
+            }
+          }
+        }
+      }
+    }
+  }
+  return combos;
+}
+
+function findLowestPair(hand) {
+  const pairs = findAllPairs(hand);
+  return pairs.length > 0 ? pairs[0] : null;
+}
+
+function findBestFiveCardCombo(hand) {
+  const combos = findAllFiveCardCombos(hand);
+  return combos.length > 0 ? combos[0] : null;
+}
