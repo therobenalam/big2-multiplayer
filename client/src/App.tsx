@@ -83,7 +83,9 @@ export default function App() {
   }, [isChatMinimized, chatMessages]);
 
   useEffect(() => {
-    const s = io('/', { transports: ['websocket', 'polling'] });
+    // Use environment variable for backend URL, fallback to same origin for local dev
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || '/';
+    const s = io(backendUrl, { transports: ['websocket', 'polling'] });
     setSocket(s);
     
     // Handle socket disconnection

@@ -5,7 +5,9 @@ A modern web app to play Big Two with 4 connected players. Minimal input: player
 Stack:
 - Server: Node.js, Express, Socket.IO
 - Client: React (Vite + TypeScript)
-- Hosting: Render (single Web Service)
+- Hosting: 
+  - Frontend: Vercel (static site)
+  - Backend: Render.com (or Railway/Fly.io for WebSocket support)
 
 ## Rules implemented
 - 4 players, 13 cards each. First lead must include 3♦ (alone or in a valid combo).
@@ -25,6 +27,20 @@ Stack:
 
 Note: Big Two has many variants. This MVP uses common rules aligned with Pagat/Wikipedia references.
 
+## Deployment
+
+**See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment instructions.**
+
+This project uses a split deployment architecture:
+- **Frontend**: Deployed on Vercel (optimized for React/Vite apps)
+- **Backend**: Deployed on Render.com (supports WebSocket connections)
+
+Quick start:
+1. Deploy backend to Render (see DEPLOYMENT.md)
+2. Copy your backend URL
+3. Deploy frontend to Vercel with `VITE_BACKEND_URL` environment variable
+4. Access your app at the Vercel URL
+
 ## Local development
 
 - Prereqs: Node 18+
@@ -39,7 +55,9 @@ npm run build
 npm start     # serves built client and websocket server on PORT (default 10000)
 ```
 
-## Render deployment
+## Render deployment (Backend)
+
+**Note**: For detailed instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 Create a new Web Service in Render and connect your Git repo.
 
