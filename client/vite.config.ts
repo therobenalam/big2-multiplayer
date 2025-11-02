@@ -8,10 +8,8 @@ export default defineConfig({
     proxy: {
       '/socket.io': {
         target: 'http://localhost:10000',
-        ws: true
-      },
-      '/': {
-        target: 'http://localhost:10000',
+        ws: true,
+        changeOrigin: true
       }
     }
   },
